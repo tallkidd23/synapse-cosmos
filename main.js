@@ -1,7 +1,7 @@
-// SYNAPSE COSMOS: FACTOR 9 HYPER-DIMENSIONAL ASTROPHYSICAL ENGINE
-// Award-winning museum-grade 3D orbital mechanics, stable Keplerian spiral arms,
-// Einstein gravitational lensing, 3D volumetric nebula depth-slicing, interactive zoom & camera orbit,
-// bipolar relativistic AGN jets, and live chemical emission spectroscopy HUD in pure IBM-PC CP437 ASCII / CGA.
+// SYNAPSE COSMOS: GRAND MASTER SUITE (FACTOR 10)
+// Interactive Spacetime Gravity Wells, Supernova Click-Ignition, Real-Time Web Audio Gravitational Sonification,
+// Live Chemical Spectroscopy Analyzer, 3D Keplerian Spiral Disks, and Einstein-Rosen Wormhole Transport.
+// Pure IBM-PC CP437 ASCII / 16-Color CGA Retrotech Graphics.
 
 (function () {
   'use strict';
@@ -16,7 +16,6 @@
   const CHAR_W = 10;
   const CHAR_H = 14;
 
-  // 16-Color CGA Retro Palette
   const CGA = {
     BLACK: '#000000',
     BLUE: '#0000AA',
@@ -37,10 +36,10 @@
   };
 
   const COSMIC_EPOCHS = [
-    { name: 'PRIMORDIAL DAWN', uvFlux: 1.4, tempK: 3200, bgChar: '.', color: CGA.LIGHT_BLUE },
-    { name: 'STARBURST ACCRETION', uvFlux: 1.8, tempK: 12000, bgChar: ':', color: CGA.LIGHT_CYAN },
-    { name: 'SUPERNOVA CRUCIBLE', uvFlux: 0.7, tempK: 85000, bgChar: '.', color: CGA.YELLOW },
-    { name: 'QUASAR RELATIVISTIC', uvFlux: 2.4, tempK: 240000, bgChar: ':', color: CGA.LIGHT_MAGENTA }
+    { name: 'PRIMORDIAL DAWN', uvFlux: 1.4, tempK: 3200, color: CGA.LIGHT_BLUE },
+    { name: 'STARBURST ACCRETION', uvFlux: 1.8, tempK: 12000, color: CGA.LIGHT_CYAN },
+    { name: 'SUPERNOVA CRUCIBLE', uvFlux: 0.7, tempK: 85000, color: CGA.YELLOW },
+    { name: 'QUASAR RELATIVISTIC', uvFlux: 2.4, tempK: 240000, color: CGA.LIGHT_MAGENTA }
   ];
 
   const STELLAR_CLASSES = [
@@ -61,6 +60,69 @@
     };
   }
 
+  // --- Web Audio 8-Bit Analog Astrophysical Synthesizer ---
+  let audioCtx = null;
+  let isAudioEnabled = false;
+
+  function initAudio() {
+    if (audioCtx) return;
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+      isAudioEnabled = true;
+    } catch (e) {
+      console.warn('Web Audio not supported', e);
+    }
+  }
+
+  function playPulsarChirp(freq) {
+    if (!audioCtx || !isAudioEnabled) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq || 440, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.08);
+  }
+
+  function playGravitationalWaveRumble() {
+    if (!audioCtx || !isAudioEnabled) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(65, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + 0.25);
+    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.35);
+  }
+
+  function playSupernovaExplosion() {
+    if (!audioCtx || !isAudioEnabled) return;
+    const bufferSize = audioCtx.sampleRate * 0.4;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
+    }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+    noise.connect(gain);
+    gain.connect(audioCtx.destination);
+    noise.start();
+  }
+
   // --- Dimension-X Camera & 3D Projection State ---
   let layoutMode = '2x2';
   let focusedSectorIdx = 0;
@@ -71,12 +133,15 @@
   let currentFps = 60;
 
   // 3D Orbit Camera Angles & Zoom
-  let camPitch = 0.55;  // Elevation angle
-  let camYaw = 0.0;     // Azimuth rotation
-  let camDistance = 46.0; // Distance from galactic center
+  let camPitch = 0.55;
+  let camYaw = 0.0;
+  let camDistance = 46.0;
   let isDragging = false;
   let lastMouseX = 0;
   let lastMouseY = 0;
+
+  // Interactive Gravity Well Probe (Left Click Hold)
+  let activeGravityProbe = null;
 
   // Inter-Universal Wormhole Nodes in 3D Space
   const wormholeNodes = [
@@ -88,7 +153,7 @@
 
   const transitSparks = [];
 
-  class UniverseSectorFactor9 {
+  class UniverseSectorGrandMaster {
     constructor(idx, id, name, seed) {
       this.sectorIdx = idx;
       this.id = id;
@@ -101,18 +166,15 @@
       this.headerRows = 2;
       this.footerRows = 1;
 
-      // Gravitational Wave 2D Grid
       this.GW_curr = null;
       this.GW_prev = null;
       this.GW_next = null;
 
-      // Chemical Spectroscopy Composition
       this.spectroscopy = { H: 0.74, He: 0.24, CNO: 0.015, Fe: 0.005 };
 
       this.epochTime = idx * 1.57;
       this.globalKuramotoCoupling = 0.04;
 
-      // 3D Entities
       this.stellarCores = [];
       this.accretionSwarm = [];
       this.supermassiveHoles = [];
@@ -137,12 +199,10 @@
       this.GW_prev = new Float32Array(total);
       this.GW_next = new Float32Array(total);
 
-      // 3D Volumetric Nebula Clouds
       this.volumetricNebula = [];
       const numClouds = 45;
       for (let i = 0; i < numClouds; i++) {
         const rad = 4.0 + this.rng() * 16.0;
-        // Two-armed logarithmic spiral arm distribution for gas clouds
         const arm = (i % 2) * Math.PI;
         const theta = arm + Math.log(rad + 1.0) * 1.8 + (this.rng() - 0.5) * 0.6;
         this.volumetricNebula.push({
@@ -154,7 +214,6 @@
         });
       }
 
-      // Distant 3D Cosmic Microwave Background Stars
       this.cosmicDust = [];
       const dustGlyphs = ['.', '·', '°', '*'];
       for (let i = 0; i < 40; i++) {
@@ -180,6 +239,7 @@
       const gy = Math.floor(((cy + 20.0) / 40.0) * (this.rows - 3) + this.headerRows);
       const i = this.cellIdx(gx, gy);
       this.GW_curr[i] += amplitude;
+      playGravitationalWaveRumble();
     }
 
     mutateAccretionGenome(parentGenome) {
@@ -197,7 +257,6 @@
       this.supermassiveHoles = [];
       this.relativisticJets = [];
 
-      // 1. Central Supermassive Black Hole
       this.supermassiveHoles.push({
         x: 0.0,
         y: 0.0,
@@ -206,14 +265,11 @@
         jetCooldown: 0
       });
 
-      // 2. Stable 3D Keplerian Spiral Arm Stars
       const starCount = 14;
       for (let k = 0; k < starCount; k++) {
         const rad = 5.0 + (k / (starCount - 1)) * 14.0;
         const armOffset = (k % 2) * Math.PI;
         const ang = armOffset + Math.log(rad + 1.0) * 1.6 + (this.rng() - 0.5) * 0.3;
-        
-        // Circular Keplerian Velocity: v = sqrt(GM / r)
         const vKepler = Math.sqrt(90.0 * 0.035 / Math.max(rad, 2.0));
         const spIdx = k % STELLAR_CLASSES.length;
 
@@ -235,7 +291,6 @@
         });
       }
 
-      // 3. Stable 3D Accretion Swarm (Planetesimals)
       for (let i = 0; i < 30; i++) {
         const r = 3.5 + this.rng() * 16.0;
         const armOffset = (i % 2) * Math.PI;
@@ -256,12 +311,29 @@
       }
     }
 
+    triggerSupernovaAt(targetX, targetY) {
+      let nearestStar = null, minDist = Infinity;
+      for (let i = 0; i < this.stellarCores.length; i++) {
+        const star = this.stellarCores[i];
+        const d = Math.hypot(star.x - targetX, star.y - targetY);
+        if (d < minDist) {
+          minDist = d;
+          nearestStar = { star, idx: i };
+        }
+      }
+      if (nearestStar && minDist < 6.0) {
+        this.triggerGravitationalWave(nearestStar.star.x, nearestStar.star.y, 4.5);
+        playSupernovaExplosion();
+        this.spectroscopy.Fe = Math.min(0.12, this.spectroscopy.Fe + 0.008);
+        this.stellarCores.splice(nearestStar.idx, 1);
+      }
+    }
+
     update(now, allSectors) {
       this.epochTime += 0.0015;
       const epochIdx = Math.floor((this.epochTime / (Math.PI * 2)) * COSMIC_EPOCHS.length) % COSMIC_EPOCHS.length;
       const epoch = COSMIC_EPOCHS[epochIdx];
 
-      // 2D Riemann Gravitational Wave Propagation
       const waveSpeedSq = 0.20;
       const waveDamping = 0.96;
       for (let x = 0; x < this.cols; x++) {
@@ -277,17 +349,15 @@
       this.GW_curr.set(this.GW_next);
 
       const myWormhole = wormholeNodes[this.sectorIdx];
-
-      // 1. Stable 3D Keplerian Gravity & Stellar Dynamics
       const smbh = this.supermassiveHoles[0];
       const G = 0.035;
 
+      // 1. Stable 3D Keplerian Gravity & Pulsar Entanglement
       for (let i = this.stellarCores.length - 1; i >= 0; i--) {
         const star = this.stellarCores[i];
         star.age++;
         star.phi = Math.max(0.0, star.phi - 0.04);
 
-        // N-Body Keplerian Gravity Pull from central SMBH (Softened Plummer Potential)
         const dx = smbh.x - star.x;
         const dy = smbh.y - star.y;
         const dz = smbh.z - star.z;
@@ -299,11 +369,20 @@
         star.vy += (dy / r) * f;
         star.vz += (dz / r) * f;
 
+        // Interactive Gravity Well Influence
+        if (activeGravityProbe && this.sectorIdx === focusedSectorIdx) {
+          const pDx = activeGravityProbe.x - star.x;
+          const pDy = activeGravityProbe.y - star.y;
+          const pR2 = pDx * pDx + pDy * pDy + 1.0;
+          const pF = 1.8 / pR2;
+          star.vx += (pDx / Math.sqrt(pR2)) * pF;
+          star.vy += (pDy / Math.sqrt(pR2)) * pF;
+        }
+
         star.x += star.vx;
         star.y += star.vy;
         star.z += star.vz;
 
-        // Kuramoto Quantum Entanglement Coupling
         if (star.entangledPair) {
           star.theta += (star.naturalFreq + Math.sin(star.entangledPair.theta - star.theta) * 0.08);
         } else {
@@ -311,7 +390,11 @@
         }
         star.theta %= (Math.PI * 2);
 
-        // Wormhole Leap
+        // Sound Chirp on Entangled Pulsar Peak
+        if (star.phi > 0.95 && this.rng() < 0.04) {
+          playPulsarChirp(300 + star.speciesIdx * 120);
+        }
+
         const dWh = Math.hypot(star.x - myWormhole.x, star.y - myWormhole.y, star.z - myWormhole.z);
         if (dWh < 3.2 && star.fusionEnergy > 15.0 && this.rng() < 0.015) {
           const targetSector = allSectors[myWormhole.toSector];
@@ -341,6 +424,7 @@
 
         if (star.age > star.maxAge) {
           this.triggerGravitationalWave(star.x, star.y, 3.5);
+          playSupernovaExplosion();
           if (star.entangledPair) star.entangledPair.entangledPair = null;
           this.stellarCores.splice(i, 1);
         }
@@ -363,11 +447,19 @@
         body.vy += (dy / r) * f;
         body.vz += (dz / r) * f;
 
+        if (activeGravityProbe && this.sectorIdx === focusedSectorIdx) {
+          const pDx = activeGravityProbe.x - body.x;
+          const pDy = activeGravityProbe.y - body.y;
+          const pR2 = pDx * pDx + pDy * pDy + 1.0;
+          const pF = 2.4 / pR2;
+          body.vx += (pDx / Math.sqrt(pR2)) * pF;
+          body.vy += (pDy / Math.sqrt(pR2)) * pF;
+        }
+
         body.x += body.vx;
         body.y += body.vy;
         body.z += body.vz;
 
-        // Tidal Disruption / Consumption by SMBH at Event Horizon
         if (r < 1.4) {
           this.triggerGravitationalWave(body.x, body.y, 2.5);
           smbh.mass = Math.min(150.0, smbh.mass + 1.5);
@@ -375,7 +467,6 @@
           continue;
         }
 
-        // 3D Wormhole Hyper-Tunnel Fall
         const distToWh = Math.hypot(body.x - myWormhole.x, body.y - myWormhole.y, body.z - myWormhole.z);
         if (distToWh < 1.8) {
           const targetSector = allSectors[myWormhole.toSector];
@@ -434,17 +525,14 @@
       }
     }
 
-    // Factor 9 3D-to-2D Perspective Ray Projection
     project(x, y, z, originX, originY, widthPix, heightPix) {
       const cosY = Math.cos(camYaw), sinY = Math.sin(camYaw);
       const cosP = Math.cos(camPitch), sinP = Math.sin(camPitch);
 
-      // Rotate around Z (Yaw)
       const x1 = x * cosY - y * sinY;
       const y1 = x * sinY + y * cosY;
       const z1 = z;
 
-      // Rotate around X (Pitch)
       const x2 = x1;
       const y2 = y1 * cosP - z1 * sinP;
       const z2 = y1 * sinP + z1 * cosP;
@@ -521,7 +609,7 @@
         ctx.fillText(`⮞SEC-0${myWormhole.toSector + 1}`, pWh.x - CHAR_W * 2, pWh.y + CHAR_H);
       }
 
-      // 5. 3D Stellar Cores (Pop III / II / I)
+      // 5. 3D Stellar Cores
       for (let i = 0; i < this.stellarCores.length; i++) {
         const star = this.stellarCores[i];
         const sp = STELLAR_CLASSES[star.speciesIdx] || STELLAR_CLASSES[0];
@@ -552,22 +640,29 @@
       const smbh = this.supermassiveHoles[0];
       const pSMBH = this.project(smbh.x, smbh.y, smbh.z, originX, originY, widthPix, heightPix);
       if (pSMBH && pSMBH.x >= originX && pSMBH.x < originX + widthPix && pSMBH.y >= originY + CHAR_H * 2 && pSMBH.y < originY + heightPix) {
-        // Gravitational Lensing Einstein Ring (○ / ◎)
         ctx.fillStyle = CGA.LIGHT_CYAN;
         ctx.fillText('◎', pSMBH.x - CHAR_W * 1.5, pSMBH.y - CHAR_H * 0.8);
         ctx.fillText('◎', pSMBH.x + CHAR_W * 0.8, pSMBH.y + CHAR_H * 0.8);
-
         ctx.fillStyle = CGA.RED;
         ctx.fillText('◄►', pSMBH.x - CHAR_W, pSMBH.y);
+      }
+
+      // 8. Render Active Interactive Gravity Probe Cursor
+      if (activeGravityProbe && this.sectorIdx === focusedSectorIdx) {
+        const pProbe = this.project(activeGravityProbe.x, activeGravityProbe.y, 0, originX, originY, widthPix, heightPix);
+        if (pProbe) {
+          ctx.fillStyle = CGA.LIGHT_MAGENTA;
+          ctx.fillText('✛', pProbe.x, pProbe.y);
+        }
       }
     }
   }
 
   const sectors = [
-    new UniverseSectorFactor9(0, 'SEC-01', 'Pillars of Creation', 0x7A49B2),
-    new UniverseSectorFactor9(1, 'SEC-02', 'Carina Starburst', 0xC914E3),
-    new UniverseSectorFactor9(2, 'SEC-03', 'Tarantula Nebula', 0x11DF08),
-    new UniverseSectorFactor9(3, 'SEC-04', 'Orion Molecular Cloud', 0x88FA20)
+    new UniverseSectorGrandMaster(0, 'SEC-01', 'Pillars of Creation', 0x7A49B2),
+    new UniverseSectorGrandMaster(1, 'SEC-02', 'Carina Starburst', 0xC914E3),
+    new UniverseSectorGrandMaster(2, 'SEC-03', 'Tarantula Nebula', 0x11DF08),
+    new UniverseSectorGrandMaster(3, 'SEC-04', 'Orion Molecular Cloud', 0x88FA20)
   ];
 
   function resize() {
@@ -634,7 +729,7 @@
     const divider = '═'.repeat(Math.floor(width / CHAR_W));
     ctx.fillText(divider, 0, footerTop);
 
-    const nav = ` [M] MATRIX: ${layoutMode.toUpperCase()}  |  [S] SPECTROSCOPY  |  [DRAG/WHEEL] 3D ORBIT/ZOOM  |  [P] ${isPaused ? 'RESUME' : 'PAUSE'}  |  [R] BIG BANG  |  FPS: ${currentFps}`;
+    const nav = ` [M] MATRIX: ${layoutMode.toUpperCase()}  |  [S] SPECTROSCOPY  |  [L-CLICK] GRAV PROBE  |  [R-CLICK] SUPERNOVA  |  [P] ${isPaused ? 'RESUME' : 'PAUSE'}  |  [R] BIG BANG  |  FPS: ${currentFps}`;
     ctx.fillText(nav, 0, footerTop + CHAR_H);
   }
 
@@ -710,33 +805,55 @@
     renderAsciiInterface();
   }
 
-  // --- Interactive Mouse & Wheel 3D Camera Controls ---
+  // --- Interactive Mouse, Touch & Web Audio Handlers ---
   canvas.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    lastMouseX = e.clientX;
-    lastMouseY = e.clientY;
+    initAudio();
+    if (e.button === 0) {
+      if (e.shiftKey) {
+        const simX = ((e.clientX / width) - 0.5) * 32.0;
+        const simY = ((e.clientY / height) - 0.5) * 32.0;
+        activeGravityProbe = { x: simX, y: simY };
+      } else {
+        isDragging = true;
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+      }
+    } else if (e.button === 2) {
+      e.preventDefault();
+      const simX = ((e.clientX / width) - 0.5) * 32.0;
+      const simY = ((e.clientY / height) - 0.5) * 32.0;
+      sectors[focusedSectorIdx].triggerSupernovaAt(simX, simY);
+    }
   });
 
-  window.addEventListener('mouseup', () => { isDragging = false; });
+  canvas.addEventListener('contextmenu', (e) => { e.preventDefault(); });
+
+  window.addEventListener('mouseup', () => {
+    isDragging = false;
+    activeGravityProbe = null;
+  });
 
   canvas.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    const dx = e.clientX - lastMouseX;
-    const dy = e.clientY - lastMouseY;
-    camYaw += dx * 0.008;
-    camPitch = Math.max(-1.3, Math.min(1.3, camPitch + dy * 0.008));
-    lastMouseX = e.clientX;
-    lastMouseY = e.clientY;
+    if (activeGravityProbe) {
+      activeGravityProbe.x = ((e.clientX / width) - 0.5) * 32.0;
+      activeGravityProbe.y = ((e.clientY / height) - 0.5) * 32.0;
+    } else if (isDragging) {
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      camYaw += dx * 0.008;
+      camPitch = Math.max(-1.3, Math.min(1.3, camPitch + dy * 0.008));
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    }
   });
 
-  // Interactive Zoom via Mouse Wheel
   canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
     camDistance = Math.max(18.0, Math.min(85.0, camDistance + (e.deltaY > 0 ? 3.0 : -3.0)));
   }, { passive: false });
 
-  // Touch Support for Mobile / Tablet
   canvas.addEventListener('touchstart', (e) => {
+    initAudio();
     if (e.touches.length === 1) {
       isDragging = true;
       lastMouseX = e.touches[0].clientX;
@@ -757,6 +874,7 @@
   canvas.addEventListener('touchend', () => { isDragging = false; });
 
   window.addEventListener('keydown', (e) => {
+    initAudio();
     const key = e.key.toLowerCase();
     if (key === 'm') {
       if (layoutMode === '2x2') layoutMode = '1x3';
@@ -769,6 +887,7 @@
       isPaused = !isPaused;
     } else if (key === 'r') {
       sectors.forEach(s => s.reseed());
+      playSupernovaExplosion();
     } else if (key === '+' || key === '=') {
       camDistance = Math.max(18.0, camDistance - 4.0);
     } else if (key === '-' || key === '_') {
