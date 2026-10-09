@@ -1,7 +1,7 @@
-// SYNAPSE COSMOS: GRAND MASTER SUITE (FACTOR 10.1 CALIBRATED)
-// Full 3D Keplerian Spiral Differential Rotation, Dynamic Gas Swirling, Live Reactive Chemical Spectroscopy,
-// Click Gravity Wells & Right-Click Supernova Ignition, Relativistic Time-Warp Controls (0.1x to 25.0x),
-// and Web Audio Sonification in pure IBM-PC CP437 ASCII / 16-Color CGA Retrotech Graphics.
+// SYNAPSE COSMOS: FACTOR 11 (3D VOLUMETRIC GRAVITATIONAL WAVE ENGINE)
+// True 3D Spherical Wavefront Radiation, Quadrupole Spacetime Strain, 3D Keplerian Spiral Disks,
+// Reactive Chemical Spectroscopy, Interactive Gravity Well Probes, Supernova Click-Ignition,
+// and 8-Bit Web Audio Gravitational Sonification in pure IBM-PC CP437 ASCII / 16-Color CGA.
 
 (function () {
   'use strict';
@@ -95,19 +95,19 @@
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(65, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + 0.25);
-    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+    osc.frequency.setValueAtTime(55, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.28);
+    gain.gain.setValueAtTime(0.14, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.38);
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     osc.start();
-    osc.stop(audioCtx.currentTime + 0.35);
+    osc.stop(audioCtx.currentTime + 0.38);
   }
 
   function playSupernovaExplosion() {
     if (!audioCtx || !isAudioEnabled) return;
-    const bufferSize = audioCtx.sampleRate * 0.4;
+    const bufferSize = audioCtx.sampleRate * 0.45;
     const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
@@ -116,8 +116,8 @@
     const noise = audioCtx.createBufferSource();
     noise.buffer = buffer;
     const gain = audioCtx.createGain();
-    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+    gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
     noise.connect(gain);
     gain.connect(audioCtx.destination);
     noise.start();
@@ -127,12 +127,11 @@
   let layoutMode = '2x2';
   let focusedSectorIdx = 0;
   let isPaused = false;
-  let showSpectroscopyHUD = true; // Enabled by default
+  let showSpectroscopyHUD = true;
   let lastFpsUpdate = performance.now();
   let frameCount = 0;
   let currentFps = 60;
 
-  // Time-Warp Multiplier: 0.1x (Slow-Mo) -> 1.0x (Real-Time) -> 5.0x -> 25.0x (Hyper-Speed)
   let timeWarp = 1.0;
   const TIME_WARP_LEVELS = [0.1, 0.5, 1.0, 2.5, 5.0, 10.0, 25.0];
   let timeWarpIdx = 2;
@@ -145,7 +144,6 @@
   let lastMouseX = 0;
   let lastMouseY = 0;
 
-  // Interactive Gravity Well Probe
   let activeGravityProbe = null;
 
   // Inter-Universal Wormhole Nodes
@@ -158,7 +156,7 @@
 
   const transitSparks = [];
 
-  class UniverseSectorCalibrated {
+  class UniverseSector3DGW {
     constructor(idx, id, name, seed) {
       this.sectorIdx = idx;
       this.id = id;
@@ -166,44 +164,29 @@
       this.seed = seed;
       this.rng = createRNG(seed);
 
-      this.cols = 40;
-      this.rows = 24;
-      this.headerRows = 2;
-      this.footerRows = 1;
-
-      this.GW_curr = null;
-      this.GW_prev = null;
-      this.GW_next = null;
-
+      // Reactive Chemical Spectroscopy Metrics
       this.spectroscopy = { H: 0.74, He: 0.24, CNO: 0.015, Fe: 0.005 };
       this.supernovaCount = 0;
 
       this.epochTime = idx * 1.57;
 
+      // 3D Entities
       this.stellarCores = [];
       this.accretionSwarm = [];
       this.supermassiveHoles = [];
       this.relativisticJets = [];
       this.cosmicDust = [];
       this.volumetricNebula = [];
+      
+      // 3D Volumetric Spherical Gravitational Waves Pool
+      this.sphericalGravWaves = [];
 
       this.maxStars = 75;
       this.initFields();
       this.reseed();
     }
 
-    cellIdx(x, y) {
-      const cx = ((x % this.cols) + this.cols) % this.cols;
-      const cy = ((y % this.rows) + this.rows) % this.rows;
-      return cx + cy * this.cols;
-    }
-
     initFields() {
-      const total = this.cols * this.rows;
-      this.GW_curr = new Float32Array(total);
-      this.GW_prev = new Float32Array(total);
-      this.GW_next = new Float32Array(total);
-
       this.cosmicDust = [];
       const dustGlyphs = ['.', '·', '°', '*'];
       for (let i = 0; i < 40; i++) {
@@ -217,18 +200,19 @@
       }
     }
 
-    resize(cols, rows) {
-      this.cols = Math.max(20, cols);
-      this.rows = Math.max(14, rows);
-      this.initFields();
-      this.reseed();
-    }
+    resize(cols, rows) {}
 
-    triggerGravitationalWave(cx, cy, amplitude) {
-      const gx = Math.floor(((cx + 20.0) / 40.0) * this.cols);
-      const gy = Math.floor(((cy + 20.0) / 40.0) * (this.rows - 3) + this.headerRows);
-      const i = this.cellIdx(gx, gy);
-      this.GW_curr[i] += amplitude;
+    triggerSphericalGravWave(originX, originY, originZ, amplitude) {
+      this.sphericalGravWaves.push({
+        x: originX,
+        y: originY,
+        z: originZ,
+        radius: 0.5,
+        speed: 0.95,
+        maxRadius: 28.0,
+        amplitude: amplitude || 3.0,
+        life: 1.0
+      });
       playGravitationalWaveRumble();
     }
 
@@ -247,6 +231,7 @@
       this.supermassiveHoles = [];
       this.relativisticJets = [];
       this.volumetricNebula = [];
+      this.sphericalGravWaves = [];
       this.supernovaCount = 0;
 
       // 1. Central Supermassive Black Hole
@@ -353,7 +338,7 @@
         }
       }
       if (nearestStar && minDist < 12.0) {
-        this.triggerGravitationalWave(nearestStar.star.x, nearestStar.star.y, 4.5);
+        this.triggerSphericalGravWave(nearestStar.star.x, nearestStar.star.y, nearestStar.star.z, 4.5);
         playSupernovaExplosion();
         this.supernovaCount++;
         this.updateSpectroscopyMetrics();
@@ -363,33 +348,40 @@
 
     update(now, allSectors, dtFactor) {
       this.epochTime += 0.0015 * dtFactor;
-      const epochIdx = Math.floor((this.epochTime / (Math.PI * 2)) * COSMIC_EPOCHS.length) % COSMIC_EPOCHS.length;
-      const epoch = COSMIC_EPOCHS[epochIdx];
 
+      // 1. Swirl Volumetric Gas Nebulae
       for (let i = 0; i < this.volumetricNebula.length; i++) {
         const c = this.volumetricNebula[i];
         c.theta += c.vTheta * dtFactor * 0.6;
       }
 
-      const waveSpeedSq = 0.20;
-      const waveDamping = 0.96;
-      for (let x = 0; x < this.cols; x++) {
-        for (let y = this.headerRows; y < this.rows - this.footerRows; y++) {
-          const i = this.cellIdx(x, y);
-          const lapGW = (this.GW_curr[this.cellIdx(x + 1, y)] + this.GW_curr[this.cellIdx(x - 1, y)] +
-            this.GW_curr[this.cellIdx(x, y + 1)] + this.GW_curr[this.cellIdx(x, y - 1)]) - 4.0 * this.GW_curr[i];
-          let nextGW = (2.0 * this.GW_curr[i] - this.GW_prev[i] + waveSpeedSq * lapGW) * waveDamping;
-          this.GW_next[i] = Math.abs(nextGW) < 0.002 ? 0.0 : nextGW;
+      // 2. Propagate 3D Spherical Gravitational Waves
+      for (let i = this.sphericalGravWaves.length - 1; i >= 0; i--) {
+        const gw = this.sphericalGravWaves[i];
+        gw.radius += gw.speed * dtFactor;
+        gw.life = Math.max(0.0, 1.0 - gw.radius / gw.maxRadius);
+
+        // Apply Transverse Quadrupole Spacetime Strain (h+ mode) to passing matter
+        for (let j = 0; j < this.accretionSwarm.length; j++) {
+          const body = this.accretionSwarm[j];
+          const dist3D = Math.hypot(body.x - gw.x, body.y - gw.y, body.z - gw.z);
+          if (Math.abs(dist3D - gw.radius) < 1.2) {
+            const strain = 0.15 * gw.life * dtFactor;
+            body.vx -= body.x * strain * 0.1;
+            body.vy += body.y * strain * 0.1;
+          }
+        }
+
+        if (gw.radius >= gw.maxRadius || gw.life <= 0) {
+          this.sphericalGravWaves.splice(i, 1);
         }
       }
-      this.GW_prev.set(this.GW_curr);
-      this.GW_curr.set(this.GW_next);
 
       const myWormhole = wormholeNodes[this.sectorIdx];
       const smbh = this.supermassiveHoles[0];
       const G = 0.035;
 
-      // 1. Keplerian Stellar Dynamics
+      // 3. Keplerian Stellar Dynamics & Kuramoto Pulsar Entanglement
       for (let i = this.stellarCores.length - 1; i >= 0; i--) {
         const star = this.stellarCores[i];
         star.age += dtFactor;
@@ -406,6 +398,7 @@
         star.vy += (dy / r) * f * dtFactor;
         star.vz += (dz / r) * f * dtFactor;
 
+        // Interactive Gravity Probe
         if (activeGravityProbe && this.sectorIdx === focusedSectorIdx) {
           const pDx = activeGravityProbe.x - star.x;
           const pDy = activeGravityProbe.y - star.y;
@@ -459,7 +452,7 @@
         }
 
         if (star.age > star.maxAge) {
-          this.triggerGravitationalWave(star.x, star.y, 3.5);
+          this.triggerSphericalGravWave(star.x, star.y, star.z, 3.5);
           playSupernovaExplosion();
           this.supernovaCount++;
           this.updateSpectroscopyMetrics();
@@ -468,7 +461,7 @@
         }
       }
 
-      // 2. Accretion Swarm (Planetesimals)
+      // 4. Stable 3D Accretion Swarm (Planetesimals)
       for (let i = this.accretionSwarm.length - 1; i >= 0; i--) {
         const body = this.accretionSwarm[i];
         body.age += dtFactor;
@@ -498,7 +491,7 @@
         body.z += body.vz * dtFactor;
 
         if (r < 1.4) {
-          this.triggerGravitationalWave(body.x, body.y, 2.5);
+          this.triggerSphericalGravWave(body.x, body.y, body.z, 2.5);
           smbh.mass = Math.min(150.0, smbh.mass + 1.5);
           this.updateSpectroscopyMetrics();
           this.accretionSwarm.splice(i, 1);
@@ -533,7 +526,7 @@
         }
       }
 
-      // 3. Relativistic Bipolar Jets
+      // 5. Relativistic Bipolar Jets
       if (this.rng() < 0.40 * dtFactor) {
         const jetSpd = 1.9;
         this.relativisticJets.push({
@@ -598,7 +591,7 @@
 
       ctx.font = '11px Courier New, monospace';
       ctx.fillStyle = CGA.LIGHT_CYAN;
-      const title = `[${this.id}] ${this.name.toUpperCase()} :: ${epoch.name.slice(0, 11)} ST:${this.stellarCores.length} ACC:${this.accretionSwarm.length} 3D-CAM[P:${camPitch.toFixed(2)} Y:${camYaw.toFixed(2)} Z:${camDistance.toFixed(1)}] WARP:${timeWarp.toFixed(1)}x`;
+      const title = `[${this.id}] ${this.name.toUpperCase()} :: ${epoch.name.slice(0, 11)} ST:${this.stellarCores.length} ACC:${this.accretionSwarm.length} 3D-CAM[P:${camPitch.toFixed(2)} Y:${camYaw.toFixed(2)}] WARP:${timeWarp.toFixed(1)}x`;
       ctx.fillText(title, originX + 4, originY + 2);
 
       const headerLine = '═'.repeat(Math.floor(widthPix / CHAR_W));
@@ -615,7 +608,7 @@
         }
       }
 
-      // 2. Dynamic 3D Volumetric Spiral Nebula Sheets (Swirling in Real Time)
+      // 2. Dynamic 3D Volumetric Spiral Nebula Clouds
       for (let i = 0; i < this.volumetricNebula.length; i++) {
         const c = this.volumetricNebula[i];
         const cX = Math.cos(c.theta) * c.r;
@@ -627,7 +620,26 @@
         }
       }
 
-      // 3. Relativistic Bipolar Jets
+      // 3. 3D Expanding Spherical Gravitational Wave Shells
+      for (let i = 0; i < this.sphericalGravWaves.length; i++) {
+        const gw = this.sphericalGravWaves[i];
+        const steps = 16;
+        for (let a = 0; a < steps; a++) {
+          const phi = (a / steps) * Math.PI * 2;
+          const wX = gw.x + Math.cos(phi) * gw.radius;
+          const wY = gw.y + Math.sin(phi) * gw.radius;
+          const wZ = gw.z + Math.sin(phi * 2.0) * (gw.radius * 0.35);
+
+          const p = this.project(wX, wY, wZ, originX, originY, widthPix, heightPix);
+          if (p && p.x >= originX && p.x < originX + widthPix && p.y >= originY + CHAR_H * 2 && p.y < originY + heightPix) {
+            ctx.fillStyle = gw.life > 0.5 ? CGA.LIGHT_CYAN : CGA.CYAN;
+            const glyph = gw.life > 0.6 ? '(' : '~';
+            ctx.fillText(glyph, p.x, p.y);
+          }
+        }
+      }
+
+      // 4. Relativistic Bipolar Jets
       for (let i = 0; i < this.relativisticJets.length; i++) {
         const jet = this.relativisticJets[i];
         const p = this.project(jet.x, jet.y, jet.z, originX, originY, widthPix, heightPix);
@@ -637,7 +649,7 @@
         }
       }
 
-      // 4. 3D Wormhole Nodes
+      // 5. 3D Wormhole Nodes
       const myWormhole = wormholeNodes[this.sectorIdx];
       const pWh = this.project(myWormhole.x, myWormhole.y, myWormhole.z, originX, originY, widthPix, heightPix);
       if (pWh && pWh.x >= originX && pWh.x < originX + widthPix && pWh.y >= originY + CHAR_H * 2 && pWh.y < originY + heightPix) {
@@ -650,7 +662,7 @@
         ctx.fillText(`⮞SEC-0${myWormhole.toSector + 1}`, pWh.x - CHAR_W * 2, pWh.y + CHAR_H);
       }
 
-      // 5. 3D Stellar Cores (Pop III / II / I)
+      // 6. 3D Stellar Cores (Pop III / II / I)
       for (let i = 0; i < this.stellarCores.length; i++) {
         const star = this.stellarCores[i];
         const sp = STELLAR_CLASSES[star.speciesIdx] || STELLAR_CLASSES[0];
@@ -661,7 +673,7 @@
         }
       }
 
-      // 6. 3D Accretion Swarm (Planetesimals & Iron Cores)
+      // 7. 3D Accretion Swarm (Planetesimals & Iron Cores)
       for (let i = 0; i < this.accretionSwarm.length; i++) {
         const body = this.accretionSwarm[i];
         const p = this.project(body.x, body.y, body.z, originX, originY, widthPix, heightPix);
@@ -677,7 +689,7 @@
         }
       }
 
-      // 7. Central Supermassive Black Hole & Einstein Lensing Ring
+      // 8. Central Supermassive Black Hole & Einstein Lensing Ring
       const smbh = this.supermassiveHoles[0];
       const pSMBH = this.project(smbh.x, smbh.y, smbh.z, originX, originY, widthPix, heightPix);
       if (pSMBH && pSMBH.x >= originX && pSMBH.x < originX + widthPix && pSMBH.y >= originY + CHAR_H * 2 && pSMBH.y < originY + heightPix) {
@@ -688,7 +700,7 @@
         ctx.fillText('◄►', pSMBH.x - CHAR_W, pSMBH.y);
       }
 
-      // 8. Render Active Interactive Gravity Probe Cursor
+      // 9. Interactive Gravity Probe Cursor
       if (activeGravityProbe && this.sectorIdx === focusedSectorIdx) {
         const pProbe = this.project(activeGravityProbe.x, activeGravityProbe.y, 0, originX, originY, widthPix, heightPix);
         if (pProbe && pProbe.x >= originX && pProbe.x < originX + widthPix && pProbe.y >= originY + CHAR_H * 2 && pProbe.y < originY + heightPix) {
@@ -700,10 +712,10 @@
   }
 
   const sectors = [
-    new UniverseSectorCalibrated(0, 'SEC-01', 'Pillars of Creation', 0x7A49B2),
-    new UniverseSectorCalibrated(1, 'SEC-02', 'Carina Starburst', 0xC914E3),
-    new UniverseSectorCalibrated(2, 'SEC-03', 'Tarantula Nebula', 0x11DF08),
-    new UniverseSectorCalibrated(3, 'SEC-04', 'Orion Molecular Cloud', 0x88FA20)
+    new UniverseSector3DGW(0, 'SEC-01', 'Pillars of Creation', 0x7A49B2),
+    new UniverseSector3DGW(1, 'SEC-02', 'Carina Starburst', 0xC914E3),
+    new UniverseSector3DGW(2, 'SEC-03', 'Tarantula Nebula', 0x11DF08),
+    new UniverseSector3DGW(3, 'SEC-04', 'Orion Molecular Cloud', 0x88FA20)
   ];
 
   function resize() {
@@ -846,7 +858,6 @@
     renderAsciiInterface();
   }
 
-  // --- Helper to Unproject Screen Coordinates into 3D Simulation Plane ---
   function getSimCoordinates(clientX, clientY) {
     let originX = 0, originY = 0, qW = width, qH = height - CHAR_H * 3;
     let targetSector = focusedSectorIdx;
@@ -877,7 +888,6 @@
     };
   }
 
-  // --- Interactive Mouse, Touch & Keyboard Handlers ---
   canvas.addEventListener('mousedown', (e) => {
     initAudio();
     const sim = getSimCoordinates(e.clientX, e.clientY);
@@ -924,7 +934,6 @@
     camDistance = Math.max(18.0, Math.min(85.0, camDistance + (e.deltaY > 0 ? 3.0 : -3.0)));
   }, { passive: false });
 
-  // Touch Support
   canvas.addEventListener('touchstart', (e) => {
     initAudio();
     if (e.touches.length === 1) {
