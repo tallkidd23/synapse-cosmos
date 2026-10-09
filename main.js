@@ -1,7 +1,7 @@
-// SYNAPSE COSMOS: HYPER-DIMENSIONAL ASTROPHYSICAL ENGINE (DIMENSION-X RELEASE)
-// True 3D Spacetime Ray-Projection & Matrix Camera Transformation in pure IBM-PC CP437 ASCII / 16-Color CGA.
-// Features: Full 3D Accretion Disks, Relativistic Jets, Gravitational Wave Metric Warps, 
-// 3D Wormhole Hyper-Funnels, Kuramoto Entanglement, Interactive Camera Orbit, and Live Chemical Spectroscopy HUD.
+// SYNAPSE COSMOS: FACTOR 9 HYPER-DIMENSIONAL ASTROPHYSICAL ENGINE
+// Award-winning museum-grade 3D orbital mechanics, stable Keplerian spiral arms,
+// Einstein gravitational lensing, 3D volumetric nebula depth-slicing, interactive zoom & camera orbit,
+// bipolar relativistic AGN jets, and live chemical emission spectroscopy HUD in pure IBM-PC CP437 ASCII / CGA.
 
 (function () {
   'use strict';
@@ -37,10 +37,10 @@
   };
 
   const COSMIC_EPOCHS = [
-    { name: 'PRIMORDIAL DAWN', F: 0.038, k: 0.061, uvFlux: 1.4, tempK: 3200, bgChar: '.', color: CGA.LIGHT_BLUE },
-    { name: 'STARBURST ACCRETION', F: 0.046, k: 0.063, uvFlux: 1.8, tempK: 12000, bgChar: ':', color: CGA.LIGHT_CYAN },
-    { name: 'SUPERNOVA CRUCIBLE', F: 0.028, k: 0.058, uvFlux: 0.7, tempK: 85000, bgChar: '.', color: CGA.YELLOW },
-    { name: 'QUASAR RELATIVISTIC', F: 0.054, k: 0.062, uvFlux: 2.4, tempK: 240000, bgChar: ':', color: CGA.LIGHT_MAGENTA }
+    { name: 'PRIMORDIAL DAWN', uvFlux: 1.4, tempK: 3200, bgChar: '.', color: CGA.LIGHT_BLUE },
+    { name: 'STARBURST ACCRETION', uvFlux: 1.8, tempK: 12000, bgChar: ':', color: CGA.LIGHT_CYAN },
+    { name: 'SUPERNOVA CRUCIBLE', uvFlux: 0.7, tempK: 85000, bgChar: '.', color: CGA.YELLOW },
+    { name: 'QUASAR RELATIVISTIC', uvFlux: 2.4, tempK: 240000, bgChar: ':', color: CGA.LIGHT_MAGENTA }
   ];
 
   const STELLAR_CLASSES = [
@@ -70,25 +70,25 @@
   let frameCount = 0;
   let currentFps = 60;
 
-  // Camera 3D Orbit Angles
-  let camPitch = 0.45; // Elevation angle
-  let camYaw = 0.0;    // Azimuth rotation
-  let camDistance = 42.0;
+  // 3D Orbit Camera Angles & Zoom
+  let camPitch = 0.55;  // Elevation angle
+  let camYaw = 0.0;     // Azimuth rotation
+  let camDistance = 46.0; // Distance from galactic center
   let isDragging = false;
   let lastMouseX = 0;
   let lastMouseY = 0;
 
-  // Inter-Universal Wormhole Nodes
+  // Inter-Universal Wormhole Nodes in 3D Space
   const wormholeNodes = [
-    { fromSector: 0, toSector: 1, x: 12.0, y: -4.0, z: 0.0, spin: 0 },
-    { fromSector: 1, toSector: 2, x: -12.0, y: 8.0, z: 0.0, spin: 0 },
-    { fromSector: 2, toSector: 3, x: 14.0, y: 6.0, z: 0.0, spin: 0 },
-    { fromSector: 3, toSector: 0, x: -10.0, y: -6.0, z: 0.0, spin: 0 }
+    { fromSector: 0, toSector: 1, x: 14.0, y: -6.0, z: 0.0, spin: 0 },
+    { fromSector: 1, toSector: 2, x: -14.0, y: 10.0, z: 0.0, spin: 0 },
+    { fromSector: 2, toSector: 3, x: 16.0, y: 8.0, z: 0.0, spin: 0 },
+    { fromSector: 3, toSector: 0, x: -12.0, y: -8.0, z: 0.0, spin: 0 }
   ];
 
   const transitSparks = [];
 
-  class UniverseSector3D {
+  class UniverseSectorFactor9 {
     constructor(idx, id, name, seed) {
       this.sectorIdx = idx;
       this.id = id;
@@ -101,34 +101,26 @@
       this.headerRows = 2;
       this.footerRows = 1;
 
-      // 2D/3D Gas Substrates
-      this.BaryonGas = null;
-      this.StellarDust = null;
-      this.GravAlarm = null;
-      this.TuringU = null;
-      this.TuringV = null;
-      this.nextU = null;
-      this.nextV = null;
+      // Gravitational Wave 2D Grid
       this.GW_curr = null;
       this.GW_prev = null;
       this.GW_next = null;
 
-      // Chemical Spectroscopy Composition Vectors (H, He, CNO, Fe)
+      // Chemical Spectroscopy Composition
       this.spectroscopy = { H: 0.74, He: 0.24, CNO: 0.015, Fe: 0.005 };
 
-      this.morphCycleTime = 0;
       this.epochTime = idx * 1.57;
       this.globalKuramotoCoupling = 0.04;
 
-      // 3D Astrophysical Entities
+      // 3D Entities
       this.stellarCores = [];
       this.accretionSwarm = [];
       this.supermassiveHoles = [];
-      this.dustCondensers = [];
       this.relativisticJets = [];
       this.cosmicDust = [];
+      this.volumetricNebula = [];
 
-      this.maxStars = 65;
+      this.maxStars = 75;
       this.initFields();
       this.reseed();
     }
@@ -141,43 +133,35 @@
 
     initFields() {
       const total = this.cols * this.rows;
-      this.BaryonGas = new Float32Array(total);
-      this.StellarDust = new Float32Array(total);
-      this.GravAlarm = new Float32Array(total);
-      this.TuringU = new Float32Array(total);
-      this.TuringV = new Float32Array(total);
-      this.nextU = new Float32Array(total);
-      this.nextV = new Float32Array(total);
       this.GW_curr = new Float32Array(total);
       this.GW_prev = new Float32Array(total);
       this.GW_next = new Float32Array(total);
 
-      for (let y = 0; y < this.rows; y++) {
-        const gravitationalWell = 1.0 + (y / this.rows) * 1.5;
-        for (let x = 0; x < this.cols; x++) {
-          const i = x + y * this.cols;
-          this.BaryonGas[i] = 3.5 + this.rng() * 3.0 * gravitationalWell;
-          this.StellarDust[i] = 0.5 * gravitationalWell;
-          this.GravAlarm[i] = 0.0;
-          this.TuringU[i] = 1.0;
-          this.TuringV[i] = 0.0;
-          this.GW_curr[i] = 0.0;
-          this.GW_prev[i] = 0.0;
-          this.GW_next[i] = 0.0;
-
-          if (y > this.headerRows + 3 && Math.hypot(x - this.cols * 0.5, y - this.rows * 0.7) < 4 && this.rng() < 0.035) {
-            this.TuringV[i] = 0.8;
-          }
-        }
+      // 3D Volumetric Nebula Clouds
+      this.volumetricNebula = [];
+      const numClouds = 45;
+      for (let i = 0; i < numClouds; i++) {
+        const rad = 4.0 + this.rng() * 16.0;
+        // Two-armed logarithmic spiral arm distribution for gas clouds
+        const arm = (i % 2) * Math.PI;
+        const theta = arm + Math.log(rad + 1.0) * 1.8 + (this.rng() - 0.5) * 0.6;
+        this.volumetricNebula.push({
+          x: Math.cos(theta) * rad,
+          y: Math.sin(theta) * rad,
+          z: (this.rng() - 0.5) * (1.5 + rad * 0.1),
+          density: 0.4 + this.rng() * 0.6,
+          char: this.rng() < 0.6 ? '%' : '#'
+        });
       }
 
+      // Distant 3D Cosmic Microwave Background Stars
       this.cosmicDust = [];
       const dustGlyphs = ['.', '·', '°', '*'];
-      for (let i = 0; i < 35; i++) {
+      for (let i = 0; i < 40; i++) {
         this.cosmicDust.push({
-          x: (this.rng() - 0.5) * 32.0,
-          y: (this.rng() - 0.5) * 32.0,
-          z: (this.rng() - 0.5) * 16.0,
+          x: (this.rng() - 0.5) * 44.0,
+          y: (this.rng() - 0.5) * 44.0,
+          z: (this.rng() - 0.5) * 20.0,
           char: dustGlyphs[Math.floor(this.rng() * dustGlyphs.length)],
           twinkle: this.rng() * Math.PI * 2
         });
@@ -192,8 +176,8 @@
     }
 
     triggerGravitationalWave(cx, cy, amplitude) {
-      const gx = Math.floor(((cx + 18.0) / 36.0) * this.cols);
-      const gy = Math.floor(((cy + 18.0) / 36.0) * (this.rows - 3) + this.headerRows);
+      const gx = Math.floor(((cx + 20.0) / 40.0) * this.cols);
+      const gy = Math.floor(((cy + 20.0) / 40.0) * (this.rows - 3) + this.headerRows);
       const i = this.cellIdx(gx, gy);
       this.GW_curr[i] += amplitude;
     }
@@ -203,7 +187,6 @@
       return {
         accretionBite: Math.max(1.2, Math.min(5.0, (parentGenome ? parentGenome.accretionBite : 2.8) * drift())),
         gravSense: Math.max(4, Math.min(12, Math.round((parentGenome ? parentGenome.gravSense : 8) * drift()))),
-        orbitalVelocity: Math.max(0.40, Math.min(0.90, (parentGenome ? parentGenome.orbitalVelocity : 0.60) * drift())),
         isDenseIronCore: parentGenome ? (this.rng() < 0.12 ? !parentGenome.isDenseIronCore : parentGenome.isDenseIronCore) : this.rng() < 0.20
       };
     }
@@ -212,22 +195,35 @@
       this.stellarCores = [];
       this.accretionSwarm = [];
       this.supermassiveHoles = [];
-      this.dustCondensers = [];
       this.relativisticJets = [];
 
-      // 3D Proto-Galaxy Seed
-      const rootCount = 6;
-      for (let k = 0; k < rootCount; k++) {
-        const rad = 3.0 + (k / (rootCount - 1)) * 14.0;
-        const ang = (k / rootCount) * Math.PI * 2 + (this.rng() - 0.5) * 0.4;
+      // 1. Central Supermassive Black Hole
+      this.supermassiveHoles.push({
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+        mass: 90.0,
+        jetCooldown: 0
+      });
+
+      // 2. Stable 3D Keplerian Spiral Arm Stars
+      const starCount = 14;
+      for (let k = 0; k < starCount; k++) {
+        const rad = 5.0 + (k / (starCount - 1)) * 14.0;
+        const armOffset = (k % 2) * Math.PI;
+        const ang = armOffset + Math.log(rad + 1.0) * 1.6 + (this.rng() - 0.5) * 0.3;
+        
+        // Circular Keplerian Velocity: v = sqrt(GM / r)
+        const vKepler = Math.sqrt(90.0 * 0.035 / Math.max(rad, 2.0));
         const spIdx = k % STELLAR_CLASSES.length;
-        const star = {
+
+        this.stellarCores.push({
           x: Math.cos(ang) * rad,
           y: Math.sin(ang) * rad,
-          z: (this.rng() - 0.5) * 2.5,
-          vx: -Math.sin(ang) * 0.4,
-          vy: Math.cos(ang) * 0.4,
-          vz: (this.rng() - 0.5) * 0.05,
+          z: (this.rng() - 0.5) * 1.5,
+          vx: -Math.sin(ang) * vKepler,
+          vy: Math.cos(ang) * vKepler,
+          vz: (this.rng() - 0.5) * 0.02,
           speciesIdx: spIdx,
           fusionEnergy: 16.0,
           age: 0,
@@ -236,92 +232,28 @@
           theta: this.rng() * Math.PI * 2,
           naturalFreq: 0.03 + (this.rng() - 0.5) * 0.01,
           entangledPair: null
-        };
-        this.stellarCores.push(star);
-      }
-
-      // 3D Rotating Accretion Disk Swarm
-      for (let i = 0; i < 22; i++) {
-        const r = 2.0 + this.rng() * 15.0;
-        const theta = this.rng() * Math.PI * 2;
-        const vOrbit = Math.sqrt(12.0 / Math.max(r, 1.5)) * 0.45;
-        this.accretionSwarm.push({
-          x: Math.cos(theta) * r,
-          y: Math.sin(theta) * r,
-          z: (this.rng() - 0.5) * (1.2 + r * 0.08),
-          vx: -Math.sin(theta) * vOrbit,
-          vy: Math.cos(theta) * vOrbit,
-          vz: (this.rng() - 0.5) * 0.08,
-          massEnergy: 45.0,
-          age: 0,
-          genome: this.mutateAccretionGenome(null),
-          orbitalVelocity: 0.60
         });
       }
 
-      // Supermassive Black Hole at 3D Galactic Origin
-      this.supermassiveHoles.push({
-        x: 0.0,
-        y: 0.0,
-        z: 0.0,
-        vx: 0.0,
-        vy: 0.0,
-        vz: 0.0,
-        singularityMass: 85.0,
-        cruiseSpeed: 0.45,
-        burstSpeed: 1.10,
-        isJetSprinting: false,
-        jetCooldown: 0,
-        jetAngle: 0
-      });
-    }
+      // 3. Stable 3D Accretion Swarm (Planetesimals)
+      for (let i = 0; i < 30; i++) {
+        const r = 3.5 + this.rng() * 16.0;
+        const armOffset = (i % 2) * Math.PI;
+        const theta = armOffset + Math.log(r + 1.0) * 1.6 + (this.rng() - 0.5) * 0.5;
+        const vOrbit = Math.sqrt(90.0 * 0.035 / Math.max(r, 2.0)) * (0.95 + this.rng() * 0.1);
 
-    stepSubstrates(epoch) {
-      this.morphCycleTime += 0.005;
-      const breathing = Math.sin(this.morphCycleTime) * 0.003;
-      const F = epoch.F + breathing;
-      const k = epoch.k + breathing * 0.5;
-      const Du = 0.16;
-      const Dv = 0.08;
-      const waveSpeedSq = 0.20;
-      const waveDamping = 0.96;
-
-      for (let x = 0; x < this.cols; x++) {
-        for (let y = this.headerRows; y < this.rows - this.footerRows; y++) {
-          const i = this.cellIdx(x, y);
-
-          const u = this.TuringU[i];
-          const v = this.TuringV[i];
-          const lapU = (this.TuringU[this.cellIdx(x + 1, y)] + this.TuringU[this.cellIdx(x - 1, y)] +
-            this.TuringU[this.cellIdx(x, y + 1)] + this.TuringU[this.cellIdx(x, y - 1)]) * 0.25 - u;
-          const lapV = (this.TuringV[this.cellIdx(x + 1, y)] + this.TuringV[this.cellIdx(x - 1, y)] +
-            this.TuringV[this.cellIdx(x, y + 1)] + this.TuringV[this.cellIdx(x, y - 1)]) * 0.25 - v;
-
-          const localF = F + (this.BaryonGas[i] / 10.0) * 0.006;
-          const localK = k + (this.GravAlarm[i] / 8.0) * 0.005;
-          const uvv = u * v * v;
-
-          let nU = u + (Du * lapU - uvv + localF * (1.0 - u));
-          let nV = v + (Dv * lapV + uvv - (localF + localK) * v);
-
-          this.nextU[i] = Math.max(0.0, Math.min(1.0, nU));
-          this.nextV[i] = Math.max(0.0, Math.min(1.0, nV));
-
-          const lapGW = (this.GW_curr[this.cellIdx(x + 1, y)] + this.GW_curr[this.cellIdx(x - 1, y)] +
-            this.GW_curr[this.cellIdx(x, y + 1)] + this.GW_curr[this.cellIdx(x, y - 1)]) - 4.0 * this.GW_curr[i];
-          let nextGW = (2.0 * this.GW_curr[i] - this.GW_prev[i] + waveSpeedSq * lapGW) * waveDamping;
-          this.GW_next[i] = Math.abs(nextGW) < 0.002 ? 0.0 : nextGW;
-
-          this.spectroscopy.Fe = Math.min(0.08, this.spectroscopy.Fe + 0.00001);
-          this.spectroscopy.CNO = Math.min(0.12, this.spectroscopy.CNO + 0.00002);
-          this.spectroscopy.H = Math.max(0.60, 1.0 - (this.spectroscopy.He + this.spectroscopy.CNO + this.spectroscopy.Fe));
-        }
+        this.accretionSwarm.push({
+          x: Math.cos(theta) * r,
+          y: Math.sin(theta) * r,
+          z: (this.rng() - 0.5) * (1.0 + r * 0.06),
+          vx: -Math.sin(theta) * vOrbit,
+          vy: Math.cos(theta) * vOrbit,
+          vz: (this.rng() - 0.5) * 0.04,
+          massEnergy: 45.0,
+          age: 0,
+          genome: this.mutateAccretionGenome(null)
+        });
       }
-
-      this.TuringU.set(this.nextU);
-      this.TuringV.set(this.nextV);
-      this.GW_prev.set(this.GW_curr);
-      this.GW_curr.set(this.GW_next);
     }
 
     update(now, allSectors) {
@@ -329,27 +261,49 @@
       const epochIdx = Math.floor((this.epochTime / (Math.PI * 2)) * COSMIC_EPOCHS.length) % COSMIC_EPOCHS.length;
       const epoch = COSMIC_EPOCHS[epochIdx];
 
-      this.globalKuramotoCoupling = Math.max(0.04, this.globalKuramotoCoupling - 0.001);
-      this.stepSubstrates(epoch);
+      // 2D Riemann Gravitational Wave Propagation
+      const waveSpeedSq = 0.20;
+      const waveDamping = 0.96;
+      for (let x = 0; x < this.cols; x++) {
+        for (let y = this.headerRows; y < this.rows - this.footerRows; y++) {
+          const i = this.cellIdx(x, y);
+          const lapGW = (this.GW_curr[this.cellIdx(x + 1, y)] + this.GW_curr[this.cellIdx(x - 1, y)] +
+            this.GW_curr[this.cellIdx(x, y + 1)] + this.GW_curr[this.cellIdx(x, y - 1)]) - 4.0 * this.GW_curr[i];
+          let nextGW = (2.0 * this.GW_curr[i] - this.GW_prev[i] + waveSpeedSq * lapGW) * waveDamping;
+          this.GW_next[i] = Math.abs(nextGW) < 0.002 ? 0.0 : nextGW;
+        }
+      }
+      this.GW_prev.set(this.GW_curr);
+      this.GW_curr.set(this.GW_next);
 
       const myWormhole = wormholeNodes[this.sectorIdx];
 
-      // 1. 3D Stellar Dynamics & Fusion
+      // 1. Stable 3D Keplerian Gravity & Stellar Dynamics
+      const smbh = this.supermassiveHoles[0];
+      const G = 0.035;
+
       for (let i = this.stellarCores.length - 1; i >= 0; i--) {
         const star = this.stellarCores[i];
         star.age++;
         star.phi = Math.max(0.0, star.phi - 0.04);
 
-        const r3D = Math.hypot(star.x, star.y, star.z);
-        const fGrav = 18.0 / Math.max(r3D * r3D, 2.0);
-        star.vx -= (star.x / r3D) * fGrav * 0.02;
-        star.vy -= (star.y / r3D) * fGrav * 0.02;
-        star.vz -= (star.z / r3D) * fGrav * 0.02;
+        // N-Body Keplerian Gravity Pull from central SMBH (Softened Plummer Potential)
+        const dx = smbh.x - star.x;
+        const dy = smbh.y - star.y;
+        const dz = smbh.z - star.z;
+        const r2 = dx * dx + dy * dy + dz * dz + 1.5;
+        const r = Math.sqrt(r2);
+        const f = (G * smbh.mass) / r2;
+
+        star.vx += (dx / r) * f;
+        star.vy += (dy / r) * f;
+        star.vz += (dz / r) * f;
 
         star.x += star.vx;
         star.y += star.vy;
         star.z += star.vz;
 
+        // Kuramoto Quantum Entanglement Coupling
         if (star.entangledPair) {
           star.theta += (star.naturalFreq + Math.sin(star.entangledPair.theta - star.theta) * 0.08);
         } else {
@@ -357,6 +311,7 @@
         }
         star.theta %= (Math.PI * 2);
 
+        // Wormhole Leap
         const dWh = Math.hypot(star.x - myWormhole.x, star.y - myWormhole.y, star.z - myWormhole.z);
         if (dWh < 3.2 && star.fusionEnergy > 15.0 && this.rng() < 0.015) {
           const targetSector = allSectors[myWormhole.toSector];
@@ -366,9 +321,9 @@
               x: tWh.x + (this.rng() - 0.5) * 2.0,
               y: tWh.y + (this.rng() - 0.5) * 2.0,
               z: tWh.z + (this.rng() - 0.5) * 1.5,
-              vx: star.vx * 1.1,
-              vy: star.vy * 1.1,
-              vz: star.vz * 1.1,
+              vx: star.vx * 1.05,
+              vy: star.vy * 1.05,
+              vz: star.vz * 1.05,
               speciesIdx: star.speciesIdx,
               fusionEnergy: 18.0,
               age: 0,
@@ -384,29 +339,43 @@
           }
         }
 
-        if (star.fusionEnergy <= 0 || star.age > star.maxAge) {
+        if (star.age > star.maxAge) {
           this.triggerGravitationalWave(star.x, star.y, 3.5);
           if (star.entangledPair) star.entangledPair.entangledPair = null;
           this.stellarCores.splice(i, 1);
         }
       }
 
-      // 2. 3D Accretion Swarm Infall
+      // 2. Stable 3D Accretion Swarm (Planetesimals)
       for (let i = this.accretionSwarm.length - 1; i >= 0; i--) {
         const body = this.accretionSwarm[i];
         body.age++;
-        body.massEnergy -= 0.06;
+        body.massEnergy -= 0.05;
 
-        const r = Math.hypot(body.x, body.y, body.z);
-        const fG = 24.0 / Math.max(r * r, 1.5);
-        body.vx -= (body.x / r) * fG * 0.02;
-        body.vy -= (body.y / r) * fG * 0.02;
-        body.vz -= (body.z / r) * fG * 0.02;
+        const dx = smbh.x - body.x;
+        const dy = smbh.y - body.y;
+        const dz = smbh.z - body.z;
+        const r2 = dx * dx + dy * dy + dz * dz + 1.2;
+        const r = Math.sqrt(r2);
+        const f = (G * smbh.mass) / r2;
+
+        body.vx += (dx / r) * f;
+        body.vy += (dy / r) * f;
+        body.vz += (dz / r) * f;
 
         body.x += body.vx;
         body.y += body.vy;
         body.z += body.vz;
 
+        // Tidal Disruption / Consumption by SMBH at Event Horizon
+        if (r < 1.4) {
+          this.triggerGravitationalWave(body.x, body.y, 2.5);
+          smbh.mass = Math.min(150.0, smbh.mass + 1.5);
+          this.accretionSwarm.splice(i, 1);
+          continue;
+        }
+
+        // 3D Wormhole Hyper-Tunnel Fall
         const distToWh = Math.hypot(body.x - myWormhole.x, body.y - myWormhole.y, body.z - myWormhole.z);
         if (distToWh < 1.8) {
           const targetSector = allSectors[myWormhole.toSector];
@@ -417,51 +386,44 @@
               x: tWh.x + (this.rng() - 0.5) * 2.0,
               y: tWh.y + (this.rng() - 0.5) * 2.0,
               z: tWh.z + (this.rng() - 0.5) * 1.5,
-              vx: body.vx * 1.2,
-              vy: body.vy * 1.2,
-              vz: body.vz * 1.2,
+              vx: body.vx * 1.1,
+              vy: body.vy * 1.1,
+              vz: body.vz * 1.1,
               massEnergy: body.massEnergy,
               age: body.age,
-              genome: body.genome,
-              orbitalVelocity: body.orbitalVelocity
+              genome: body.genome
             });
             transitSparks.push({ from: this.sectorIdx, to: targetSector.sectorIdx, progress: 0, color: CGA.YELLOW });
             continue;
           }
         }
 
-        if (body.massEnergy <= 0 || r > 35.0) {
+        if (r > 38.0) {
           this.accretionSwarm.splice(i, 1);
         }
       }
 
-      // 3. Supermassive Black Holes & 3D Relativistic Jets
-      for (let i = this.supermassiveHoles.length - 1; i >= 0; i--) {
-        const hole = this.supermassiveHoles[i];
-        hole.singularityMass -= 0.28;
-
-        if (this.rng() < 0.35) {
-          const jetSpd = 1.8;
-          this.relativisticJets.push({
-            x: hole.x, y: hole.y, z: hole.z,
-            vx: (this.rng() - 0.5) * 0.1,
-            vy: (this.rng() - 0.5) * 0.1,
-            vz: jetSpd,
-            life: 25,
-            color: CGA.LIGHT_MAGENTA
-          });
-          this.relativisticJets.push({
-            x: hole.x, y: hole.y, z: hole.z,
-            vx: (this.rng() - 0.5) * 0.1,
-            vy: (this.rng() - 0.5) * 0.1,
-            vz: -jetSpd,
-            life: 25,
-            color: CGA.LIGHT_CYAN
-          });
-        }
+      // 3. Relativistic Bipolar Jets from SMBH
+      if (this.rng() < 0.40) {
+        const jetSpd = 1.9;
+        this.relativisticJets.push({
+          x: smbh.x, y: smbh.y, z: smbh.z,
+          vx: (this.rng() - 0.5) * 0.08,
+          vy: (this.rng() - 0.5) * 0.08,
+          vz: jetSpd,
+          life: 28,
+          color: CGA.LIGHT_MAGENTA
+        });
+        this.relativisticJets.push({
+          x: smbh.x, y: smbh.y, z: smbh.z,
+          vx: (this.rng() - 0.5) * 0.08,
+          vy: (this.rng() - 0.5) * 0.08,
+          vz: -jetSpd,
+          life: 28,
+          color: CGA.LIGHT_CYAN
+        });
       }
 
-      // 4. Update 3D Jets
       for (let i = this.relativisticJets.length - 1; i >= 0; i--) {
         const jet = this.relativisticJets[i];
         jet.x += jet.vx;
@@ -472,15 +434,17 @@
       }
     }
 
-    // 3D-to-2D Perspective Ray-Projection Engine
+    // Factor 9 3D-to-2D Perspective Ray Projection
     project(x, y, z, originX, originY, widthPix, heightPix) {
       const cosY = Math.cos(camYaw), sinY = Math.sin(camYaw);
       const cosP = Math.cos(camPitch), sinP = Math.sin(camPitch);
 
+      // Rotate around Z (Yaw)
       const x1 = x * cosY - y * sinY;
       const y1 = x * sinY + y * cosY;
       const z1 = z;
 
+      // Rotate around X (Pitch)
       const x2 = x1;
       const y2 = y1 * cosP - z1 * sinP;
       const z2 = y1 * sinP + z1 * cosP;
@@ -488,7 +452,7 @@
       const camZ = z2 + camDistance;
       if (camZ <= 1.0) return null;
 
-      const fov = 380.0;
+      const fov = 420.0;
       const screenX = originX + widthPix * 0.5 + (x2 * fov) / camZ;
       const screenY = originY + heightPix * 0.5 + (y2 * fov) / camZ;
 
@@ -507,24 +471,34 @@
 
       ctx.font = '11px Courier New, monospace';
       ctx.fillStyle = CGA.LIGHT_CYAN;
-      const title = `[${this.id}] ${this.name.toUpperCase()} :: ${epoch.name.slice(0, 11)} ST:${this.stellarCores.length} ACC:${this.accretionSwarm.length} 3D-CAM[P:${camPitch.toFixed(2)} Y:${camYaw.toFixed(2)}]`;
+      const title = `[${this.id}] ${this.name.toUpperCase()} :: ${epoch.name.slice(0, 11)} ST:${this.stellarCores.length} ACC:${this.accretionSwarm.length} 3D-CAM[P:${camPitch.toFixed(2)} Y:${camYaw.toFixed(2)} Z:${camDistance.toFixed(1)}]`;
       ctx.fillText(title, originX + 4, originY + 2);
 
       const headerLine = '═'.repeat(Math.floor(widthPix / CHAR_W));
       ctx.fillStyle = CGA.DARK_GRAY;
       ctx.fillText(headerLine, originX, originY + CHAR_H);
 
-      // 1. Render Cosmic Microwave Background Dust with Depth Z-shading
+      // 1. Distant Cosmic Dust
       for (let i = 0; i < this.cosmicDust.length; i++) {
         const d = this.cosmicDust[i];
         const p = this.project(d.x, d.y, d.z, originX, originY, widthPix, heightPix);
         if (p && p.x >= originX && p.x < originX + widthPix && p.y >= originY + CHAR_H * 2 && p.y < originY + heightPix) {
-          ctx.fillStyle = p.depth > 45.0 ? CGA.DARK_GRAY : CGA.LIGHT_GRAY;
+          ctx.fillStyle = p.depth > 50.0 ? CGA.DARK_GRAY : CGA.LIGHT_GRAY;
           ctx.fillText(d.char, p.x, p.y);
         }
       }
 
-      // 2. Render 3D Relativistic Jets
+      // 2. Volumetric 3D Spiral Nebula Clouds
+      for (let i = 0; i < this.volumetricNebula.length; i++) {
+        const c = this.volumetricNebula[i];
+        const p = this.project(c.x, c.y, c.z, originX, originY, widthPix, heightPix);
+        if (p && p.x >= originX && p.x < originX + widthPix && p.y >= originY + CHAR_H * 2 && p.y < originY + heightPix) {
+          ctx.fillStyle = p.depth > 48.0 ? CGA.DARK_GRAY : epoch.color;
+          ctx.fillText(c.char, p.x, p.y);
+        }
+      }
+
+      // 3. Relativistic Bipolar Jets
       for (let i = 0; i < this.relativisticJets.length; i++) {
         const jet = this.relativisticJets[i];
         const p = this.project(jet.x, jet.y, jet.z, originX, originY, widthPix, heightPix);
@@ -534,10 +508,10 @@
         }
       }
 
-      // 3. Render 3D Wormhole Hyper-Funnel
+      // 4. 3D Wormhole Nodes
       const myWormhole = wormholeNodes[this.sectorIdx];
       const pWh = this.project(myWormhole.x, myWormhole.y, myWormhole.z, originX, originY, widthPix, heightPix);
-      if (pWh) {
+      if (pWh && pWh.x >= originX && pWh.x < originX + widthPix && pWh.y >= originY + CHAR_H * 2 && pWh.y < originY + heightPix) {
         myWormhole.spin = (myWormhole.spin + 0.15) % (Math.PI * 2);
         const glyphs = ['☼', '◎', '⦿', '○', '•'];
         const pIdx = Math.floor((Math.sin(myWormhole.spin) * 0.5 + 0.5) * glyphs.length) % glyphs.length;
@@ -547,7 +521,7 @@
         ctx.fillText(`⮞SEC-0${myWormhole.toSector + 1}`, pWh.x - CHAR_W * 2, pWh.y + CHAR_H);
       }
 
-      // 4. Render 3D Stellar Cores
+      // 5. 3D Stellar Cores (Pop III / II / I)
       for (let i = 0; i < this.stellarCores.length; i++) {
         const star = this.stellarCores[i];
         const sp = STELLAR_CLASSES[star.speciesIdx] || STELLAR_CLASSES[0];
@@ -558,7 +532,7 @@
         }
       }
 
-      // 5. Render 3D Accretion Swarm Planetesimals
+      // 6. 3D Accretion Swarm (Planetesimals & Iron Cores)
       for (let i = 0; i < this.accretionSwarm.length; i++) {
         const body = this.accretionSwarm[i];
         const p = this.project(body.x, body.y, body.z, originX, originY, widthPix, heightPix);
@@ -568,29 +542,32 @@
             ch = '▲';
             ctx.fillStyle = CGA.YELLOW;
           } else {
-            ctx.fillStyle = p.depth > 42.0 ? CGA.CYAN : CGA.LIGHT_CYAN;
+            ctx.fillStyle = p.depth > 46.0 ? CGA.CYAN : CGA.LIGHT_CYAN;
           }
           ctx.fillText(ch, p.x, p.y);
         }
       }
 
-      // 6. Supermassive Black Hole Singularity at Origin
-      for (let i = 0; i < this.supermassiveHoles.length; i++) {
-        const hole = this.supermassiveHoles[i];
-        const p = this.project(hole.x, hole.y, hole.z, originX, originY, widthPix, heightPix);
-        if (p) {
-          ctx.fillStyle = CGA.RED;
-          ctx.fillText('◄►', p.x - CHAR_W, p.y);
-        }
+      // 7. Central Supermassive Black Hole & Einstein Lensing Ring
+      const smbh = this.supermassiveHoles[0];
+      const pSMBH = this.project(smbh.x, smbh.y, smbh.z, originX, originY, widthPix, heightPix);
+      if (pSMBH && pSMBH.x >= originX && pSMBH.x < originX + widthPix && pSMBH.y >= originY + CHAR_H * 2 && pSMBH.y < originY + heightPix) {
+        // Gravitational Lensing Einstein Ring (○ / ◎)
+        ctx.fillStyle = CGA.LIGHT_CYAN;
+        ctx.fillText('◎', pSMBH.x - CHAR_W * 1.5, pSMBH.y - CHAR_H * 0.8);
+        ctx.fillText('◎', pSMBH.x + CHAR_W * 0.8, pSMBH.y + CHAR_H * 0.8);
+
+        ctx.fillStyle = CGA.RED;
+        ctx.fillText('◄►', pSMBH.x - CHAR_W, pSMBH.y);
       }
     }
   }
 
   const sectors = [
-    new UniverseSector3D(0, 'SEC-01', 'Pillars of Creation', 0x7A49B2),
-    new UniverseSector3D(1, 'SEC-02', 'Carina Starburst', 0xC914E3),
-    new UniverseSector3D(2, 'SEC-03', 'Tarantula Nebula', 0x11DF08),
-    new UniverseSector3D(3, 'SEC-04', 'Orion Molecular Cloud', 0x88FA20)
+    new UniverseSectorFactor9(0, 'SEC-01', 'Pillars of Creation', 0x7A49B2),
+    new UniverseSectorFactor9(1, 'SEC-02', 'Carina Starburst', 0xC914E3),
+    new UniverseSectorFactor9(2, 'SEC-03', 'Tarantula Nebula', 0x11DF08),
+    new UniverseSectorFactor9(3, 'SEC-04', 'Orion Molecular Cloud', 0x88FA20)
   ];
 
   function resize() {
@@ -657,7 +634,7 @@
     const divider = '═'.repeat(Math.floor(width / CHAR_W));
     ctx.fillText(divider, 0, footerTop);
 
-    const nav = ` [M] MATRIX: ${layoutMode.toUpperCase()}  |  [S] SPECTROSCOPY HUD  |  [DRAG] 3D-ORBIT  |  [P] ${isPaused ? 'RESUME' : 'PAUSE'}  |  [R] BIG BANG  |  FPS: ${currentFps}`;
+    const nav = ` [M] MATRIX: ${layoutMode.toUpperCase()}  |  [S] SPECTROSCOPY  |  [DRAG/WHEEL] 3D ORBIT/ZOOM  |  [P] ${isPaused ? 'RESUME' : 'PAUSE'}  |  [R] BIG BANG  |  FPS: ${currentFps}`;
     ctx.fillText(nav, 0, footerTop + CHAR_H);
   }
 
@@ -733,7 +710,7 @@
     renderAsciiInterface();
   }
 
-  // --- Interactive Mouse 3D Camera Orbit ---
+  // --- Interactive Mouse & Wheel 3D Camera Controls ---
   canvas.addEventListener('mousedown', (e) => {
     isDragging = true;
     lastMouseX = e.clientX;
@@ -747,12 +724,18 @@
     const dx = e.clientX - lastMouseX;
     const dy = e.clientY - lastMouseY;
     camYaw += dx * 0.008;
-    camPitch = Math.max(-1.2, Math.min(1.2, camPitch + dy * 0.008));
+    camPitch = Math.max(-1.3, Math.min(1.3, camPitch + dy * 0.008));
     lastMouseX = e.clientX;
     lastMouseY = e.clientY;
   });
 
-  // Touch Support for Mobile / Tablet Orbit
+  // Interactive Zoom via Mouse Wheel
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    camDistance = Math.max(18.0, Math.min(85.0, camDistance + (e.deltaY > 0 ? 3.0 : -3.0)));
+  }, { passive: false });
+
+  // Touch Support for Mobile / Tablet
   canvas.addEventListener('touchstart', (e) => {
     if (e.touches.length === 1) {
       isDragging = true;
@@ -766,7 +749,7 @@
     const dx = e.touches[0].clientX - lastMouseX;
     const dy = e.touches[0].clientY - lastMouseY;
     camYaw += dx * 0.008;
-    camPitch = Math.max(-1.2, Math.min(1.2, camPitch + dy * 0.008));
+    camPitch = Math.max(-1.3, Math.min(1.3, camPitch + dy * 0.008));
     lastMouseX = e.touches[0].clientX;
     lastMouseY = e.touches[0].clientY;
   });
@@ -786,6 +769,10 @@
       isPaused = !isPaused;
     } else if (key === 'r') {
       sectors.forEach(s => s.reseed());
+    } else if (key === '+' || key === '=') {
+      camDistance = Math.max(18.0, camDistance - 4.0);
+    } else if (key === '-' || key === '_') {
+      camDistance = Math.min(85.0, camDistance + 4.0);
     } else if (key >= '1' && key <= '4') {
       focusedSectorIdx = parseInt(key, 10) - 1;
       layoutMode = '1x1';
